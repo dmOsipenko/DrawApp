@@ -12,7 +12,10 @@
 		5FF7FB5C2965A6AC00F8ECEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5FF7FB5B2965A6AC00F8ECEA /* Assets.xcassets */; };
 		5FF7FB5F2965A6AC00F8ECEA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5FF7FB5D2965A6AC00F8ECEA /* LaunchScreen.storyboard */; };
 		5FF7FB672965B1F900F8ECEA /* DrawViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF7FB662965B1F900F8ECEA /* DrawViewController.swift */; };
-		5FF7FB692965C2A800F8ECEA /* Extension+CAGradientLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF7FB682965C2A800F8ECEA /* Extension+CAGradientLayer.swift */; };
+		5FF7FB702965C42800F8ECEA /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF7FB6F2965C42800F8ECEA /* CanvasView.swift */; };
+		5FF7FB732965DB7700F8ECEA /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF7FB722965DB7700F8ECEA /* Line.swift */; };
+		5FF7FB752965DD6D00F8ECEA /* test.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5FF7FB742965DD6D00F8ECEA /* test.xib */; };
+		5FF7FB782965E6A000F8ECEA /* PhotoLibraryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF7FB772965E6A000F8ECEA /* PhotoLibraryManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,7 +26,10 @@
 		5FF7FB5E2965A6AC00F8ECEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5FF7FB602965A6AC00F8ECEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5FF7FB662965B1F900F8ECEA /* DrawViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawViewController.swift; sourceTree = "<group>"; };
-		5FF7FB682965C2A800F8ECEA /* Extension+CAGradientLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+CAGradientLayer.swift"; sourceTree = "<group>"; };
+		5FF7FB6F2965C42800F8ECEA /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
+		5FF7FB722965DB7700F8ECEA /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
+		5FF7FB742965DD6D00F8ECEA /* test.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = test.xib; sourceTree = "<group>"; };
+		5FF7FB772965E6A000F8ECEA /* PhotoLibraryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,15 +62,58 @@
 		5FF7FB512965A6AA00F8ECEA /* DrawApp */ = {
 			isa = PBXGroup;
 			children = (
-				5FF7FB522965A6AA00F8ECEA /* AppDelegate.swift */,
-				5FF7FB542965A6AA00F8ECEA /* SceneDelegate.swift */,
+				5FF7FB762965E68700F8ECEA /* PhotoLibraryManager */,
+				5FF7FB712965DB7000F8ECEA /* Model */,
+				5FF7FB6E2965C41400F8ECEA /* CustomClasses */,
+				5FF7FB6B2965C3D100F8ECEA /* AppDelegates */,
+				5FF7FB6A2965C3AF00F8ECEA /* SupportFile */,
 				5FF7FB662965B1F900F8ECEA /* DrawViewController.swift */,
-				5FF7FB682965C2A800F8ECEA /* Extension+CAGradientLayer.swift */,
-				5FF7FB5B2965A6AC00F8ECEA /* Assets.xcassets */,
-				5FF7FB5D2965A6AC00F8ECEA /* LaunchScreen.storyboard */,
+				5FF7FB742965DD6D00F8ECEA /* test.xib */,
 				5FF7FB602965A6AC00F8ECEA /* Info.plist */,
 			);
 			path = DrawApp;
+			sourceTree = "<group>";
+		};
+		5FF7FB6A2965C3AF00F8ECEA /* SupportFile */ = {
+			isa = PBXGroup;
+			children = (
+				5FF7FB5B2965A6AC00F8ECEA /* Assets.xcassets */,
+				5FF7FB5D2965A6AC00F8ECEA /* LaunchScreen.storyboard */,
+			);
+			path = SupportFile;
+			sourceTree = "<group>";
+		};
+		5FF7FB6B2965C3D100F8ECEA /* AppDelegates */ = {
+			isa = PBXGroup;
+			children = (
+				5FF7FB522965A6AA00F8ECEA /* AppDelegate.swift */,
+				5FF7FB542965A6AA00F8ECEA /* SceneDelegate.swift */,
+			);
+			path = AppDelegates;
+			sourceTree = "<group>";
+		};
+		5FF7FB6E2965C41400F8ECEA /* CustomClasses */ = {
+			isa = PBXGroup;
+			children = (
+				5FF7FB6F2965C42800F8ECEA /* CanvasView.swift */,
+			);
+			path = CustomClasses;
+			sourceTree = "<group>";
+		};
+		5FF7FB712965DB7000F8ECEA /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				5FF7FB722965DB7700F8ECEA /* Line.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		5FF7FB762965E68700F8ECEA /* PhotoLibraryManager */ = {
+			isa = PBXGroup;
+			children = (
+				5FF7FB772965E6A000F8ECEA /* PhotoLibraryManager.swift */,
+			);
+			path = PhotoLibraryManager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +174,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FF7FB752965DD6D00F8ECEA /* test.xib in Resources */,
 				5FF7FB5F2965A6AC00F8ECEA /* LaunchScreen.storyboard in Resources */,
 				5FF7FB5C2965A6AC00F8ECEA /* Assets.xcassets in Resources */,
 			);
@@ -138,7 +188,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				5FF7FB672965B1F900F8ECEA /* DrawViewController.swift in Sources */,
-				5FF7FB692965C2A800F8ECEA /* Extension+CAGradientLayer.swift in Sources */,
+				5FF7FB702965C42800F8ECEA /* CanvasView.swift in Sources */,
+				5FF7FB782965E6A000F8ECEA /* PhotoLibraryManager.swift in Sources */,
+				5FF7FB732965DB7700F8ECEA /* Line.swift in Sources */,
 				5FF7FB532965A6AA00F8ECEA /* AppDelegate.swift in Sources */,
 				5FF7FB552965A6AA00F8ECEA /* SceneDelegate.swift in Sources */,
 			);

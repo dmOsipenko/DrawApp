@@ -1,10 +1,3 @@
-//
-//  DrawViewController.swift
-//  DrawApp
-//
-//  Created by Дмитрий Осипенко on 4.01.23.
-//
-
 import UIKit
 
 class DrawViewController: UIViewController {
@@ -37,14 +30,28 @@ class DrawViewController: UIViewController {
         let slider = UISlider()
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.thumbTintColor = .white
+        slider.minimumValue = 1
+        slider.maximumValue = 10
+        slider.value = 1
+        slider.minimumTrackTintColor = .orange
+        slider.thumbTintColor = .orange
         return slider
     }()
     
-    let colorView: UIView = {
-        let view = UIView()
+    let colorView: UIColorWell = {
+        let view = UIColorWell()
+        view.supportsAlpha = false
+        view.selectedColor = .orange
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 25
-        view.backgroundColor = .black
+        view.backgroundColor = .white
+        return view
+    }()
+    
+    let mainView: CanvasView = {
+        let view = CanvasView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
         return view
     }()
     
@@ -57,38 +64,45 @@ class DrawViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        setGradientBackground()
     }
     
     @objc func tapClean() {
-      print("tap claen")
+        mainView.clear()
     }
     
     @objc func tapCancel() {
-      print("tap cancel")
+        mainView.undo()
     }
     
     @objc func tapSave() {
       print("tap save")
     }
     
-    func setGradientBackground() {
-        let fistColor = UIColor.orange
-        let lastColor = UIColor.purple
-        let gradient = CAGradientLayer(start: .topLeft, end: .topRight, colors: [fistColor.cgColor, lastColor.cgColor], type: .axial)
-        gradient.frame = colorView.bounds
-        gradient.cornerRadius = 25
-        colorView.layer.cornerRadius = 25
-        colorView.layer.addSublayer(gradient)
+    @objc func tapColorView() {
+        print("JJJJJ")
+        mainView.setStrokeColor(color: colorView.selectedColor ?? .black)
+        colorSlider.minimumTrackTintColor = colorView.selectedColor
+        colorSlider.thumbTintColor = colorView.selectedColor
+    }
+    
+    @objc func tapSlider() {
+        mainView.setStrokeWidth(width: colorSlider.value)
     }
 }
 
 extension DrawViewController {
     private func setupConstraints() {
-        view.backgroundColor = .white
-        view.addSubview(saveButton)
-        saveButton.addTarget(self, action: #selector(tapSave), for: .touchUpInside)
+        view.addSubview(mainView)
         
+        NSLayoutConstraint.activate([
+            mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            mainView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            mainView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            mainView.topAnchor.constraint(equalTo: view.topAnchor)
+        ])
+        
+        mainView.addSubview(saveButton)
+        saveButton.addTarget(self, action: #selector(tapSave), for: .touchUpInside)
         NSLayoutConstraint.activate([
             saveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
             saveButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
@@ -96,7 +110,8 @@ extension DrawViewController {
             saveButton.heightAnchor.constraint(equalToConstant: 40)
         ])
         
-        view.addSubview(colorSlider)
+        mainView.addSubview(colorSlider)
+        colorSlider.addTarget(self, action: #selector(tapSlider), for: .touchUpInside)
         NSLayoutConstraint.activate([
             colorSlider.bottomAnchor.constraint(equalTo: saveButton.topAnchor, constant: -30),
             colorSlider.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
@@ -104,7 +119,7 @@ extension DrawViewController {
             colorSlider.widthAnchor.constraint(equalToConstant: view.frame.size.width - 100)
         ])
         
-        view.addSubview(cancelButton)
+        mainView.addSubview(cancelButton)
         cancelButton.addTarget(self, action: #selector(tapCancel), for: .touchUpInside)
         NSLayoutConstraint.activate([
             cancelButton.bottomAnchor.constraint(equalTo: colorSlider.topAnchor, constant: -25),
@@ -112,7 +127,7 @@ extension DrawViewController {
             cancelButton.widthAnchor.constraint(equalToConstant: 100)
         ])
         
-        view.addSubview(cleanButton)
+        mainView.addSubview(cleanButton)
         cleanButton.addTarget(self, action: #selector(tapClean), for: .touchUpInside)
         NSLayoutConstraint.activate([
             cleanButton.bottomAnchor.constraint(equalTo: colorSlider.topAnchor, constant: -25),
@@ -120,7 +135,8 @@ extension DrawViewController {
             cleanButton.widthAnchor.constraint(equalToConstant: 100)
         ])
         
-        view.addSubview(colorView)
+        mainView.addSubview(colorView)
+        colorView.addTarget(self, action: #selector(tapColorView), for: .valueChanged)
         NSLayoutConstraint.activate([
             colorView.bottomAnchor.constraint(equalTo: colorSlider.topAnchor, constant: -15),
             colorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
