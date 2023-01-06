@@ -19,5 +19,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>For save your image</string>
 </dict>
 </plist>

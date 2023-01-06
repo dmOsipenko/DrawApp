@@ -1,7 +1,7 @@
 import UIKit
+import PencilKit
 
-
-class CanvasView: UIView {
+class CanvasView: PKCanvasView {
     
    private var lines: [Line] = []
     private var strokeColor: UIColor = .black
@@ -25,6 +25,7 @@ class CanvasView: UIView {
             }
             context.strokePath()
         }
+
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

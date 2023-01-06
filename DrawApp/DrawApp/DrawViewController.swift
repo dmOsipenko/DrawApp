@@ -1,147 +1,137 @@
 import UIKit
+import PencilKit
 
 class DrawViewController: UIViewController {
-
-    let cleanButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Очистить", for: .normal)
-        button.setTitleColor(UIColor.lightGray, for: .normal)
-        return button
-    }()
     
-    let cancelButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Отменить", for: .normal)
-        button.setTitleColor(UIColor.lightGray, for: .normal)
-        return button
-    }()
-    
-    let saveButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Сохранить", for: .normal)
-        button.setTitleColor(UIColor.lightGray, for: .normal)
-        return button
-    }()
-    
-    let colorSlider: UISlider = {
-        let slider = UISlider()
-        slider.translatesAutoresizingMaskIntoConstraints = false
-        slider.thumbTintColor = .white
-        slider.minimumValue = 1
-        slider.maximumValue = 10
-        slider.value = 1
-        slider.minimumTrackTintColor = .orange
-        slider.thumbTintColor = .orange
-        return slider
-    }()
-    
-    let colorView: UIColorWell = {
-        let view = UIColorWell()
-        view.supportsAlpha = false
-        view.selectedColor = .orange
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.cornerRadius = 25
-        view.backgroundColor = .white
-        return view
-    }()
-    
-    let mainView: CanvasView = {
+    let canvasView: CanvasView = {
         let view = CanvasView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
         return view
     }()
     
+    let toolPicker = PKToolPicker.init()
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupConstraints()
+        setupBarButtonItem()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        setUpPencilKit()
+    }
+
+   private func setUpPencilKit() {
+        toolPicker.setVisible(true, forFirstResponder: canvasView)
+        toolPicker.addObserver(canvasView)
+        toolPicker.isRulerActive = false
+        canvasView.isOpaque = true
+        canvasView.delegate = self
+        canvasView.drawingPolicy = .anyInput
+        canvasView.becomeFirstResponder()
+    }
+    
+    private func setupBarButtonItem() {
+        let undo = UIBarButtonItem(image: UIImage(named: "left")?.resizeTo(size: CGSize(width: 25, height: 25)), style: .plain, target: self, action: #selector(tapUndo))
+           
+        let redo = UIBarButtonItem(image: UIImage(named: "right")?.resizeTo(size: CGSize(width: 25, height: 25)), style: .plain, target: self, action: #selector(tapRedo))
+        undo.tintColor = .darkGray
+        redo.tintColor = .darkGray
+        navigationItem.leftBarButtonItems = [undo, redo]
+        let settings = UIBarButtonItem(image: UIImage(named: "settings")?.resizeTo(size: CGSize(width: 25, height: 25)), style: .plain, target: self, action: #selector(tapSettings))
+        settings.tintColor = .darkGray
+        navigationItem.rightBarButtonItem = settings
+    }
+    
+    @objc func tapUndo() {
+        canvasView.undoManager?.undo()
+    }
+    
+    @objc func tapRedo() {
+        canvasView.undoManager?.redo()
+    }
+    
+    @objc func tapSettings() {
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Скачать", style: .default, handler: { [weak self] _ in
+            PhotoLibraryManager.shared.saveImage(canvasView: self?.canvasView ?? CanvasView()) { success, error in
+                DispatchQueue.main.async {
+                    self?.showAlert(success: success)
+                }
+            }
+        }))
         
+        alert.addAction(UIAlertAction(title: "Удалить", style: .default, handler: { [weak self] _ in
+            self?.canvasView.drawing = PKDrawing()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+        present(alert, animated: true)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+    func showAlert(success: Bool) {
+        let alert = UIAlertController(title: success ? "Отлично" : "Ошибка", message: success ? "Ваше изображение сохранено" : "Ваше изображение не удалось сохранить", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Окей", style: .default))
+        present(alert, animated: true)
     }
-    
-    @objc func tapClean() {
-        mainView.clear()
+}
+
+extension DrawViewController: PKToolPickerObserver, PKCanvasViewDelegate {
+
+     func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+       print("1111")
+         if let inkingTool = toolPicker.selectedTool as? PKInkingTool {
+             let color = inkingTool.color
+             print(color)
+         }
     }
-    
-    @objc func tapCancel() {
-        mainView.undo()
+
+     func canvasViewDidFinishRendering(_ canvasView: PKCanvasView) {
+        print("22")
     }
-    
-    @objc func tapSave() {
-      print("tap save")
+
+     func canvasViewDidBeginUsingTool(_ canvasView: PKCanvasView) {
+        print("333")
     }
-    
-    @objc func tapColorView() {
-        print("JJJJJ")
-        mainView.setStrokeColor(color: colorView.selectedColor ?? .black)
-        colorSlider.minimumTrackTintColor = colorView.selectedColor
-        colorSlider.thumbTintColor = colorView.selectedColor
-    }
-    
-    @objc func tapSlider() {
-        mainView.setStrokeWidth(width: colorSlider.value)
+
+     func canvasViewDidEndUsingTool(_ canvasView: PKCanvasView) {
+        print("444")
     }
 }
 
 extension DrawViewController {
     private func setupConstraints() {
-        view.addSubview(mainView)
+        view.addSubview(canvasView)
         
         NSLayoutConstraint.activate([
-            mainView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            mainView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            mainView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            mainView.topAnchor.constraint(equalTo: view.topAnchor)
-        ])
-        
-        mainView.addSubview(saveButton)
-        saveButton.addTarget(self, action: #selector(tapSave), for: .touchUpInside)
-        NSLayoutConstraint.activate([
-            saveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50),
-            saveButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
-            saveButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
-            saveButton.heightAnchor.constraint(equalToConstant: 40)
-        ])
-        
-        mainView.addSubview(colorSlider)
-        colorSlider.addTarget(self, action: #selector(tapSlider), for: .touchUpInside)
-        NSLayoutConstraint.activate([
-            colorSlider.bottomAnchor.constraint(equalTo: saveButton.topAnchor, constant: -30),
-            colorSlider.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
-            colorSlider.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
-            colorSlider.widthAnchor.constraint(equalToConstant: view.frame.size.width - 100)
-        ])
-        
-        mainView.addSubview(cancelButton)
-        cancelButton.addTarget(self, action: #selector(tapCancel), for: .touchUpInside)
-        NSLayoutConstraint.activate([
-            cancelButton.bottomAnchor.constraint(equalTo: colorSlider.topAnchor, constant: -25),
-            cancelButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
-            cancelButton.widthAnchor.constraint(equalToConstant: 100)
-        ])
-        
-        mainView.addSubview(cleanButton)
-        cleanButton.addTarget(self, action: #selector(tapClean), for: .touchUpInside)
-        NSLayoutConstraint.activate([
-            cleanButton.bottomAnchor.constraint(equalTo: colorSlider.topAnchor, constant: -25),
-            cleanButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
-            cleanButton.widthAnchor.constraint(equalToConstant: 100)
-        ])
-        
-        mainView.addSubview(colorView)
-        colorView.addTarget(self, action: #selector(tapColorView), for: .valueChanged)
-        NSLayoutConstraint.activate([
-            colorView.bottomAnchor.constraint(equalTo: colorSlider.topAnchor, constant: -15),
-            colorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            colorView.widthAnchor.constraint(equalToConstant: 50),
-            colorView.heightAnchor.constraint(equalToConstant: 50)
+            canvasView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            canvasView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            canvasView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            canvasView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
     }
 }
+
+extension UIView {
+    func shadowView() {
+       layer.shadowColor = UIColor.black.cgColor
+       layer.shadowOffset = CGSize(width: 0, height: 0.3)
+       layer.shadowOpacity = 0.15
+       layer.shadowRadius = 4.0
+    }
+}
+
+extension UIImage {
+    func resizeTo(size: CGSize) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { _ in
+            self.draw(in: CGRect.init(origin: CGPoint.zero, size: size))
+        }
+        
+        return image.withRenderingMode(self.renderingMode)
+    }
+}
+
